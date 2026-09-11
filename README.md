@@ -15,5 +15,6 @@ This will automatically download a public dataset if Fake.csv/True.csv aren't pr
 Use the already-trained model (no retraining needed) by loading the files in model/ with joblib.load().
 Limitations
 
+# Limitations
 Trained on a specific, dated dataset (2016-era US political news). Accuracy on topics/eras/styles outside that domain is meaningfully lower -- in informal testing, batches of ordinary, plausible headlines scored well below the model's ~90%+ reported test accuracy.
 
