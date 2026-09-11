@@ -216,3 +216,18 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Raw datasets -- large, and train_model.py downloads/regenerates these
+# automatically, so they don't need to live in the repo.
+Fake.csv
+True.csv
+fake_or_real_news.csv
+ 
+# Python cruft
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+ 
+# OS/editor cruft
+.DS_Store
+.vscode/
