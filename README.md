@@ -9,15 +9,10 @@ This web app functions as an extension to distinguish between real vs fake news,
 │   └── lerabyte_vectorizer.joblib  # the fitted TF-IDF vectorizer
 ├── requirements.txt
 └── README.md
-# Setup
-bash
-pip install -r requirements.txt
-# Usage
-bash
-python train_model.py
 
 This will automatically download a public dataset if Fake.csv/True.csv aren't present locally, compare four models (Logistic Regression, Naive Bayes, Linear SVC, Random Forest) via 5-fold cross-validation, train the best one, print evaluation metrics and save the model + vectorizer to model/.
 Use the already-trained model (no retraining needed) by loading the files in model/ with joblib.load().
 Limitations
-# Trained on a specific, dated dataset (2016-era US political news). Accuracy on topics/eras/styles outside that domain is meaningfully lower -- in informal testing, batches of ordinary, plausible headlines scored well below the model's ~90%+ reported test accuracy.
+
+Trained on a specific, dated dataset (2016-era US political news). Accuracy on topics/eras/styles outside that domain is meaningfully lower -- in informal testing, batches of ordinary, plausible headlines scored well below the model's ~90%+ reported test accuracy.
 
