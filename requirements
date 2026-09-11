@@ -1,0 +1,10 @@
+# Pinned to the versions this project was trained/tested with.
+# If your local versions differ, either update these to match your
+# environment, or reinstall these exact versions before retraining --
+# scikit-learn models saved with one version aren't guaranteed to load
+# correctly on a different version.
+pandas==3.0.2
+scikit-learn==1.8.0
+joblib==1.5.3
+certifi
+ 
