@@ -4,9 +4,19 @@ train_model.py
 
 Fake vs. real news classifier.
 
-Trains on the "Fake and Real News" dataset
-(https://www.kaggle.com/datasets/clmentbisaillon/fake-and-real-news-dataset),
-or an automatically downloaded fallback with equivalent columns.
+Trains on a mix of datasets so the model isn't just learning the style of
+one narrow domain/era:
+  - "Fake and Real News" (https://www.kaggle.com/datasets/clmentbisaillon/
+    fake-and-real-news-dataset), or an auto-downloaded fallback with
+    equivalent columns -- 2016-era US political news.
+  - GossipCop (https://github.com/KaiDMML/FakeNewsNet) -- entertainment/
+    celebrity news, a different topic domain entirely.
+  - The Constraint@AAAI2021 COVID-19 fake news dataset
+    (https://github.com/diptamath/covid_fake_news) -- 2020 health
+    misinformation, short social-media-style text.
+
+See evaluate_ood.py for a check of whether adding these actually helped
+generalization, versus just growing the in-domain score.
 """
 
 import os
@@ -28,41 +38,96 @@ FAKE_PATH = "Fake.csv"
 TRUE_PATH = "True.csv"
 FALLBACK_URL = "https://raw.githubusercontent.com/lutzhamel/fake-news/master/data/fake_or_real_news.csv"
 FALLBACK_PATH = "fake_or_real_news.csv"
+
+GOSSIPCOP_FAKE_URL = "https://raw.githubusercontent.com/KaiDMML/FakeNewsNet/master/dataset/gossipcop_fake.csv"
+GOSSIPCOP_REAL_URL = "https://raw.githubusercontent.com/KaiDMML/FakeNewsNet/master/dataset/gossipcop_real.csv"
+GOSSIPCOP_FAKE_PATH = "gossipcop_fake.csv"
+GOSSIPCOP_REAL_PATH = "gossipcop_real.csv"
+
+COVID_TRAIN_URL = "https://raw.githubusercontent.com/diptamath/covid_fake_news/main/data/Constraint_Train.csv"
+COVID_VAL_URL = "https://raw.githubusercontent.com/diptamath/covid_fake_news/main/data/Constraint_Val.csv"
+COVID_TRAIN_PATH = "covid_train.csv"
+COVID_VAL_PATH = "covid_val.csv"
+
 MODEL_DIR = "model"
 MODEL_PATH = os.path.join(MODEL_DIR, "lerabyte_model.joblib")
 VECTORIZER_PATH = os.path.join(MODEL_DIR, "lerabyte_vectorizer.joblib")
 
 
-def ensure_fake_true_csvs():
-    if os.path.exists(FAKE_PATH) and os.path.exists(TRUE_PATH):
+def download_if_missing(url, path):
+    if os.path.exists(path):
         return
-
-    print(f"{FAKE_PATH} / {TRUE_PATH} not found -- downloading a public "
-          f"equivalent dataset and splitting it to match...")
-    if not os.path.exists(FALLBACK_PATH):
-        # Use certifi's CA bundle explicitly, since some Python installs
-        # don't ship a working default one.
-        ssl_context = ssl.create_default_context(cafile=certifi.where())
-        with urllib.request.urlopen(FALLBACK_URL, context=ssl_context) as response:
-            with open(FALLBACK_PATH, "wb") as out_file:
-                out_file.write(response.read())
-
-    combined = pd.read_csv(FALLBACK_PATH)
-    fake = combined[combined["label"] == "FAKE"][["title", "text"]]
-    true = combined[combined["label"] == "REAL"][["title", "text"]]
-    fake.to_csv(FAKE_PATH, index=False)
-    true.to_csv(TRUE_PATH, index=False)
+    # Use certifi's CA bundle explicitly, since some Python installs
+    # don't ship a working default one.
+    ssl_context = ssl.create_default_context(cafile=certifi.where())
+    with urllib.request.urlopen(url, context=ssl_context) as response:
+        with open(path, "wb") as out_file:
+            out_file.write(response.read())
 
 
-ensure_fake_true_csvs()
-fake = pd.read_csv(FAKE_PATH)
-true = pd.read_csv(TRUE_PATH)
+def load_isot():
+    """2016-era US political news -- Reuters (real) vs. known fake-news sites (fake)."""
+    if not (os.path.exists(FAKE_PATH) and os.path.exists(TRUE_PATH)):
+        print(f"{FAKE_PATH} / {TRUE_PATH} not found -- downloading a public "
+              f"equivalent dataset and splitting it to match...")
+        download_if_missing(FALLBACK_URL, FALLBACK_PATH)
+        combined = pd.read_csv(FALLBACK_PATH)
+        fake = combined[combined["label"] == "FAKE"][["title", "text"]]
+        true = combined[combined["label"] == "REAL"][["title", "text"]]
+        fake.to_csv(FAKE_PATH, index=False)
+        true.to_csv(TRUE_PATH, index=False)
 
-# label: 0 = fake news, 1 = real news
-fake["label"] = 0
-true["label"] = 1
-data = pd.concat([fake, true], axis=0)
-data = data[["title", "text", "label"]]
+    fake = pd.read_csv(FAKE_PATH)
+    true = pd.read_csv(TRUE_PATH)
+    fake["label"] = 0
+    true["label"] = 1
+    return pd.concat([fake, true], axis=0)[["title", "text", "label"]]
+
+
+def load_gossipcop():
+    """Entertainment/celebrity news -- a topic domain the ISOT data has none of."""
+    download_if_missing(GOSSIPCOP_FAKE_URL, GOSSIPCOP_FAKE_PATH)
+    download_if_missing(GOSSIPCOP_REAL_URL, GOSSIPCOP_REAL_PATH)
+
+    fake = pd.read_csv(GOSSIPCOP_FAKE_PATH)[["title"]].copy()
+    real = pd.read_csv(GOSSIPCOP_REAL_PATH)[["title"]].copy()
+    # Real outnumbers fake here roughly 3:1 -- downsample real so the model
+    # doesn't just learn "gossip-style title => real".
+    real = real.sample(n=len(fake), random_state=42)
+
+    fake["text"] = ""
+    real["text"] = ""
+    fake["label"] = 0
+    real["label"] = 1
+    return pd.concat([fake, real], axis=0)[["title", "text", "label"]]
+
+
+def load_covid():
+    """2020 COVID-19 health misinformation -- short, social-media-style text."""
+    download_if_missing(COVID_TRAIN_URL, COVID_TRAIN_PATH)
+    download_if_missing(COVID_VAL_URL, COVID_VAL_PATH)
+
+    covid = pd.concat([pd.read_csv(COVID_TRAIN_PATH), pd.read_csv(COVID_VAL_PATH)], axis=0)
+    covid = covid[covid["label"].isin(["real", "fake"])]
+    covid["title"] = ""
+    covid["text"] = covid["tweet"]
+    covid["label"] = (covid["label"] == "real").astype(int)
+    return covid[["title", "text", "label"]]
+
+
+sources = {
+    "isot (2016 US politics)": load_isot(),
+    "gossipcop (entertainment)": load_gossipcop(),
+    "covid misinfo (2020 health)": load_covid(),
+}
+print("Dataset composition:")
+for name, df in sources.items():
+    fake_n = (df["label"] == 0).sum()
+    real_n = (df["label"] == 1).sum()
+    print(f"  {name:<30} {len(df):>6} rows  ({fake_n} fake / {real_n} real)")
+
+data = pd.concat(sources.values(), axis=0)
+print(f"  {'total':<30} {len(data):>6} rows\n")
 
 # combine title + text into one field the vectorizer can work with
 data["content"] = data["title"].fillna("") + ". " + data["text"].fillna("")
