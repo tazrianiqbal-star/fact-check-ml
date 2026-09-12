@@ -1,0 +1,133 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Fact Check ML</title>
+<style>
+  body {
+    width: 320px;
+    margin: 0;
+    padding: 16px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: #1a1a1a;
+    background: #ffffff;
+  }
+  h1 {
+    font-size: 15px;
+    margin: 0 0 4px;
+  }
+  p.subtitle {
+    font-size: 12px;
+    color: #666;
+    margin: 0 0 14px;
+  }
+  button {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    background: #2563eb;
+    color: white;
+    cursor: pointer;
+  }
+  button:disabled {
+    background: #9ab6f5;
+    cursor: default;
+  }
+  #status {
+    text-align: center;
+    font-size: 13px;
+    color: #666;
+    margin-top: 10px;
+  }
+  #error {
+    margin-top: 12px;
+    padding: 10px;
+    background: #fef2f2;
+    color: #b91c1c;
+    border-radius: 8px;
+    font-size: 12px;
+  }
+  #result {
+    margin-top: 14px;
+  }
+  .badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 13px;
+  }
+  .badge-real {
+    background: #dcfce7;
+    color: #166534;
+  }
+  .badge-fake {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+  #confidence {
+    display: block;
+    margin-top: 6px;
+    font-size: 12px;
+    color: #444;
+  }
+  #terms {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  #terms li {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: #f1f5f9;
+  }
+  .term-real {
+    background: #dcfce7 !important;
+    color: #166534;
+  }
+  .term-fake {
+    background: #fee2e2 !important;
+    color: #991b1b;
+  }
+  #explanation-note {
+    display: block;
+    margin-top: 8px;
+    font-size: 11px;
+    color: #888;
+  }
+  #disclaimer {
+    margin-top: 16px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+    font-size: 10px;
+    color: #999;
+    line-height: 1.4;
+  }
+</style>
+</head>
+<body>
+  <h1>Fact Check ML</h1>
+  <p class="subtitle">Checks whether this page reads more like real or fake news.</p>
+  <button id="check-btn">Check this page</button>
+  <div id="status" hidden>Checking...</div>
+  <div id="error" hidden></div>
+  <div id="result" hidden>
+    <span id="label" class="badge"></span>
+    <span id="confidence"></span>
+    <ul id="terms"></ul>
+    <span id="explanation-note"></span>
+  </div>
+  <div id="disclaimer">
+    Trained on a mix of news datasets. This is a style-based classifier --
+    it can't verify facts, and may be wrong on unfamiliar topics.
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+# Pinned to the versions this API was built/tested with. Must load a
+# model trained with the scikit-learn/joblib versions in the root
+# requirements.txt -- mismatched versions aren't guaranteed to unpickle.
+fastapi==0.141.1
+uvicorn[standard]==0.52.4
+pydantic==2.13.5
+scikit-learn==1.8.0
+joblib==1.5.3
