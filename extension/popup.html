@@ -74,10 +74,23 @@
     font-size: 12px;
     color: #444;
   }
+  #why {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid #eee;
+  }
+  #why h2 {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #888;
+    margin: 0 0 8px;
+    font-weight: 700;
+  }
   #terms {
     list-style: none;
     padding: 0;
-    margin: 10px 0 0;
+    margin: 0;
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
@@ -96,11 +109,16 @@
     background: #fee2e2 !important;
     color: #991b1b;
   }
+  .term-neutral {
+    background: #e2e8f0 !important;
+    color: #334155;
+  }
   #explanation-note {
     display: block;
     margin-top: 8px;
     font-size: 11px;
     color: #888;
+    line-height: 1.4;
   }
   #disclaimer {
     margin-top: 16px;
@@ -121,8 +139,11 @@
   <div id="result" hidden>
     <span id="label" class="badge"></span>
     <span id="confidence"></span>
-    <ul id="terms"></ul>
-    <span id="explanation-note"></span>
+    <div id="why">
+      <h2>Why this prediction?</h2>
+      <ul id="terms"></ul>
+      <span id="explanation-note"></span>
+    </div>
   </div>
   <div id="disclaimer">
     Trained on a mix of news datasets. This is a style-based classifier --

@@ -49,7 +49,15 @@ function renderResult(data) {
   for (const t of data.top_terms) {
     const li = document.createElement("li");
     li.textContent = t.term;
-    li.className = t.weight >= 0 ? "term-real" : "term-fake";
+    // Only "coefficient" explanations have a meaningful per-word sign
+    // (TF-IDF weights used for "salience" are always >= 0, so coloring
+    // by sign there would just paint every term green).
+    li.className =
+      data.explanation_type === "coefficient"
+        ? t.weight >= 0
+          ? "term-real"
+          : "term-fake"
+        : "term-neutral";
     termsEl.appendChild(li);
   }
 
