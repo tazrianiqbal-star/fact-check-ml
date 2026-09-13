@@ -1,0 +1,19 @@
+.git
+.venv
+venv/
+__pycache__/
+*.pyc
+
+# Local dataset cache and model artifacts -- train_model.py regenerates
+# these at build time; excluding local copies keeps the build reproducible
+# from a clean checkout instead of whatever happens to be on disk here.
+Fake.csv
+True.csv
+fake_or_real_news.csv
+gossipcop_fake.csv
+gossipcop_real.csv
+covid_train.csv
+covid_val.csv
+model/
+
+extension/
