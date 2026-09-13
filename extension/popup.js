@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8000/predict";
+const API_URL = "https://fact-check-ml-api.onrender.com/predict";
 
 const checkBtn = document.getElementById("check-btn");
 const statusEl = document.getElementById("status");
@@ -102,7 +102,7 @@ checkBtn.addEventListener("click", async () => {
   } catch (err) {
     showError(
       err.message.includes("Failed to fetch")
-        ? "Couldn't reach the local API server. Is it running (uvicorn api.main:app)?"
+        ? "Couldn't reach the API server. If it's been idle a while (free tier spins down), it may just be waking up -- try again in ~30 seconds."
         : err.message
     );
   } finally {
