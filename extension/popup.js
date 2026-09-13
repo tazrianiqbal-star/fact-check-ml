@@ -9,7 +9,7 @@ const termsEl = document.getElementById("terms");
 const explanationNoteEl = document.getElementById("explanation-note");
 const errorEl = document.getElementById("error");
 
-// Injected into the active tab via chrome.scripting.executeScript, so it
+// Injected into the active tab via browser.scripting.executeScript, so it
 // must be fully self-contained (no references to popup.js's own scope).
 function extractPageContent() {
   const title = document.title || "";
@@ -72,12 +72,12 @@ function renderResult(data) {
 checkBtn.addEventListener("click", async () => {
   setLoading(true);
   try {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
     if (!tab || !tab.id) {
       throw new Error("No active tab found.");
     }
 
-    const [{ result }] = await chrome.scripting.executeScript({
+    const [{ result }] = await browser.scripting.executeScript({
       target: { tabId: tab.id },
       func: extractPageContent,
     });

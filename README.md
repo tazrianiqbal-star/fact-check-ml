@@ -52,9 +52,11 @@ Two free-tier caveats worth knowing going in:
 The API's CORS policy (`allow_origins=["*"]`) is intentionally left open rather than dev-only, since this endpoint doesn't handle auth or sensitive data and browser extensions typically call from unpredictable origins.
 
 # Publishing the extension
-Chrome, Firefox, and Edge each require their own store submission:
+The extension is already cross-browser: it uses the `browser.*` WebExtension namespace everywhere (via Mozilla's `webextension-polyfill`, vendored at extension/vendor/browser-polyfill.min.js) instead of Chrome-only `chrome.*`, and manifest.json declares both `background.service_worker` (Chrome) and `background.scripts` (Firefox, which doesn't run MV3 background code as a service worker) so the same package loads in both. It also sets the `browser_specific_settings.gecko.id` and `data_collection_permissions` keys Firefox requires for MV3 submissions -- the latter is set to `websiteContent`, since the extension does send the current page's title/text to the API for classification.
+
+Chrome, Firefox, and Edge each still require their own store submission:
 - **Chrome Web Store**: one-time $5 developer registration fee, then submit via the [Chrome Web Store Developer Dashboard](https://chrome.google.com/webstore/devconsole). Review typically takes a few days.
-- **Firefox Add-ons (AMO)**: free, but Firefox uses the `browser.*` WebExtension namespace rather than `chrome.*` -- add a polyfill (e.g. `webextension-polyfill`) or branch the API calls before submitting.
+- **Firefox Add-ons (AMO)**: free, submit via [addons.mozilla.org/developers](https://addons.mozilla.org/developers/). Worth testing in real Firefox before submitting -- this was built and reasoned through carefully, but not click-tested in an actual Firefox install.
 - **Edge Add-ons**: free, via the Microsoft Partner Center. Since Edge is Chromium-based, the existing Manifest V3 package works with little to no change.
 
 # Limitations
