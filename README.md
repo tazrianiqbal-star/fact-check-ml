@@ -31,9 +31,10 @@ uvicorn api.main:app --reload
 
 
 Then load the extension:
-1. Go to chrome://extensions, enable "Developer mode" (top right).
-2. Click "Load unpacked" and select the extension/ folder.
-3. Open any article page, click the extension icon, and click "Check this page".
+- **Chrome/Edge**: go to chrome://extensions (or edge://extensions), enable "Developer mode" (top right), click "Load unpacked", and select the extension/ folder.
+- **Firefox**: go to about:debugging -> "This Firefox" -> "Load Temporary Add-on...", and select extension/manifest.json specifically (not the folder). Temporary add-ons are cleared on restart, so this needs re-doing each session until it's published on AMO.
+
+Then open any article page, click the extension icon, and click "Check this page".
 
 The popup grabs the page's title + visible article/paragraph text, sends it to the local API, and shows a REAL/FAKE badge, a confidence score, and the words that most influenced the prediction (signed toward REAL/FAKE for linear models; just the most notable present words for non-linear ones like Random Forest, labeled accordingly since that's not a causal explanation).
 
@@ -56,8 +57,13 @@ The extension is already cross-browser: it uses the `browser.*` WebExtension nam
 
 Chrome, Firefox, and Edge each still require their own store submission:
 - **Chrome Web Store**: one-time $5 developer registration fee, then submit via the [Chrome Web Store Developer Dashboard](https://chrome.google.com/webstore/devconsole). Review typically takes a few days.
-- **Firefox Add-ons (AMO)**: free, submit via [addons.mozilla.org/developers](https://addons.mozilla.org/developers/). Worth testing in real Firefox before submitting -- this was built and reasoned through carefully, but not click-tested in an actual Firefox install.
+- **Firefox Add-ons (AMO)**: free, submit via [addons.mozilla.org/developers](https://addons.mozilla.org/developers/). Manually tested in a real Firefox install (temporary add-on) and works correctly. AMO requires reviewable source for any minified/bundled code -- see the note on extension/vendor/browser-polyfill.min.js below.
 - **Edge Add-ons**: free, via the Microsoft Partner Center. Since Edge is Chromium-based, the existing Manifest V3 package works with little to no change.
+
+**Vendored dependency note (for AMO's source review)**: extension/vendor/browser-polyfill.min.js is the unmodified, official pre-built `dist/browser-polyfill.min.js` from the `webextension-polyfill` npm package, version 0.12.0 (MPL-2.0 licensed), fetched directly from https://unpkg.com/webextension-polyfill@0.12.0/dist/browser-polyfill.min.js. It is not built from source by this project. Full unminified source is at https://github.com/mozilla/webextension-polyfill (the `src/` directory); reproduce the build via `npm install webextension-polyfill@0.12.0` in that repo. Every other file in the extension is original, unminified source.
+
+# Privacy
+The extension sends the current page's title and visible article/paragraph text to the API (either your own local instance or the deployed one you point it at) so it can run the classifier -- that's the only data it collects or transmits. There's no analytics, tracking, or persistent storage beyond whatever plain request logs the API host itself keeps. This matches the `websiteContent` data collection category declared in extension/manifest.json's `browser_specific_settings.gecko.data_collection_permissions`.
 
 # Limitations
 Originally trained on a single, dated dataset (2016-era US political news), which generalized poorly -- ordinary out-of-domain headlines scored only ~62% on the out-of-domain eval set (see evaluate_ood.py) despite ~93% in-domain test accuracy. Adding GossipCop and COVID-19 misinformation data brought out-of-domain accuracy up to ~94% on that same eval set, at the cost of some in-domain accuracy (~93% -> ~85%). The out-of-domain eval set is hand-written, not an independently verified benchmark -- treat its numbers as a useful signal, not a rigorous one. TF-IDF + linear/tree models also have a ceiling: they learn lexical/stylistic patterns, not whether a claim is factually true, so a confident, well-written fabrication can still fool them.
