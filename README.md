@@ -2,6 +2,7 @@
 # Fake news detector
 This web app functions as an extension to distinguish between real vs fake news, in an attempt to reduce noise and misinformation in the academic data collection processes. This is my first time building an ML model from scratch ready for deployment, hope it comes of use to someone! Dataset: www.kaggle.com/datasets/clmentbisaillon/fake-and-real-news-dataset 
 
+**Install**: live on Firefox Add-ons -> [Fact Check ML on AMO](https://addons.mozilla.org/en-US/firefox/addon/fact-check-ml/). Chrome/Edge submissions are in progress -- see "Publishing the extension" below.
 
 # Setup
 bash
@@ -61,8 +62,8 @@ The extension is already cross-browser: it uses the `browser.*` WebExtension nam
 
 Chrome, Firefox, and Edge each still require their own store submission:
 - **Chrome Web Store**: one-time $5 developer registration fee, then submit the `-chromium.zip` via the [Chrome Web Store Developer Dashboard](https://chrome.google.com/webstore/devconsole). Review typically takes a few days.
-- **Firefox Add-ons (AMO)**: free, submit the plain (non-`-chromium`) zip via [addons.mozilla.org/developers](https://addons.mozilla.org/developers/). Manually tested in a real Firefox install (temporary add-on) and works correctly. AMO requires reviewable source for any minified/bundled code -- see the note on extension/vendor/browser-polyfill.min.js below.
-- **Edge Add-ons**: free, via the Microsoft Partner Center (enroll under Account settings -> Programs -> Microsoft Edge, not a direct workspace link). Submit the `-chromium.zip`.
+- **Firefox Add-ons (AMO)**: free, submit the plain (non-`-chromium`) zip via [addons.mozilla.org/developers](https://addons.mozilla.org/developers/). AMO requires reviewable source for any minified/bundled code -- see the note on extension/vendor/browser-polyfill.min.js below. **Approved and live**: https://addons.mozilla.org/en-US/firefox/addon/fact-check-ml/
+- **Edge Add-ons**: free, via the Microsoft Partner Center (enroll under Account settings -> Programs -> Microsoft Edge, not a direct workspace link). Submit the `-chromium.zip`. Submitted, review in progress (typically up to 7 business days).
 
 **Vendored dependency note (for AMO's source review)**: extension/vendor/browser-polyfill.min.js is the unmodified, official pre-built `dist/browser-polyfill.min.js` from the `webextension-polyfill` npm package, version 0.12.0 (MPL-2.0 licensed), fetched directly from https://unpkg.com/webextension-polyfill@0.12.0/dist/browser-polyfill.min.js. It is not built from source by this project. Full unminified source is at https://github.com/mozilla/webextension-polyfill (the `src/` directory); reproduce the build via `npm install webextension-polyfill@0.12.0` in that repo. Every other file in the extension is original, unminified source.
 
