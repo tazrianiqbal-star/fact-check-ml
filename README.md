@@ -2,7 +2,7 @@
 # Fake news detector
 This web app functions as an extension to distinguish between real vs fake news, in an attempt to reduce noise and misinformation in the academic data collection processes. This is my first time building an ML model from scratch ready for deployment, hope it comes of use to someone! Dataset: www.kaggle.com/datasets/clmentbisaillon/fake-and-real-news-dataset 
 
-**Install**: live on Firefox Add-ons -> [Fact Check ML on AMO](https://addons.mozilla.org/en-US/firefox/addon/fact-check-ml/). Chrome/Edge submissions are in progress -- see "Publishing the extension" below.
+**Install**: live on [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/fact-check-ml/) and the [Chrome Web Store](https://chromewebstore.google.com/detail/fact-check-ml/cjfakkolbniifaplldmbbgaemllllnkk). Edge Add-ons status below -- see "Publishing the extension".
 
 # Setup
 bash
@@ -61,7 +61,7 @@ The extension is already cross-browser: it uses the `browser.*` WebExtension nam
 - `dist/fact-check-ml-extension-<version>-chromium.zip` -- for **Chrome Web Store and Edge Add-ons**. Same package minus `background.scripts`, which Chrome/Edge's Manifest V3 validator hard-rejects as invalid (not just a warning) when present alongside `service_worker`.
 
 Chrome, Firefox, and Edge each still require their own store submission:
-- **Chrome Web Store**: one-time $5 developer registration fee, then submit the `-chromium.zip` via the [Chrome Web Store Developer Dashboard](https://chrome.google.com/webstore/devconsole). Review typically takes a few days.
+- **Chrome Web Store**: one-time $5 developer registration fee, then submit the `-chromium.zip` via the [Chrome Web Store Developer Dashboard](https://chrome.google.com/webstore/devconsole). **Approved and live**: https://chromewebstore.google.com/detail/fact-check-ml/cjfakkolbniifaplldmbbgaemllllnkk
 - **Firefox Add-ons (AMO)**: free, submit the plain (non-`-chromium`) zip via [addons.mozilla.org/developers](https://addons.mozilla.org/developers/). AMO requires reviewable source for any minified/bundled code -- see the note on extension/vendor/browser-polyfill.min.js below. **Approved and live**: https://addons.mozilla.org/en-US/firefox/addon/fact-check-ml/
 - **Edge Add-ons**: free, via the Microsoft Partner Center (enroll under Account settings -> Programs -> Microsoft Edge, not a direct workspace link). Submit the `-chromium.zip`. Submitted, review in progress (typically up to 7 business days).
 
